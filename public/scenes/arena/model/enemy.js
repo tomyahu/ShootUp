@@ -78,4 +78,9 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 			y: this.y
 		};
 	}
+
+
+	getGun() {
+		return this.gun;
+	}
 }

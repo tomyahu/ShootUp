@@ -17,12 +17,9 @@ class PlayerGunContainer extends GunContainer {
 			y: point_in_world.y - this.y
 		}
 
-		this.rot = Math.atan2(dpos.y, dpos.x);
-		this.setRotation(this.rot);
-
-		let to_flip = (this.rot > Math.PI*0.5 || this.rot < -Math.PI*0.5);
-		this.gun.flipY = to_flip;
-
+		const new_rot = Math.atan2(dpos.y, dpos.x);
+		this.setRot(new_rot);
+		this.scene.io.emit('player_gun_rotated', {rot: new_rot}); //the object contains the movement data
 	}
 
 }

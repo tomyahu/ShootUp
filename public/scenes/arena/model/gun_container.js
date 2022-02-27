@@ -25,4 +25,13 @@ class GunContainer extends Phaser.GameObjects.Container {
 		this.setPosition(gun_position.x, gun_position.y);
 	}
 
+
+	setRot(rot) {
+		this.rot = rot;
+		this.setRotation(this.rot);
+
+		let to_flip = (this.rot > Math.PI*0.5 || this.rot < -Math.PI*0.5);
+		this.gun.flipY = to_flip;
+	}
+
 }

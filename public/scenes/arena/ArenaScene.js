@@ -64,6 +64,15 @@ class ArenaScene extends Phaser.Scene {
 				}
 			});
 		});
+
+		// rotate other player gun
+		this.io.on('rotate_player_gun', function(player_data) {
+			enemies_ref.getChildren().forEach(function(enemy) {
+				if (player_data.player_id == enemy.id) { //set a new position for the enemy because the player data and enemy id in the enemy's group match together
+					enemy.getGun().setRot(player_data.rot);
+				}
+			});
+		});
 	}
 
 

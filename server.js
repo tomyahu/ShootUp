@@ -34,7 +34,8 @@ io.on('connection', function (socket) { //returns socket which is a piece of dat
 	players[socket.id] = {
 		player_id: socket.id,
 		x: 500,
-		y: 500
+		y: 500,
+		rot: 0.0
 	};
 	socket.emit('actualPlayers', players); //sends info back to that socket and not to all the other sockets
 	socket.broadcast.emit('new_player', players[socket.id]);
@@ -52,5 +53,11 @@ io.on('connection', function (socket) { //returns socket which is a piece of dat
 		console.log("someone has disconnected");
 		delete players[socket.id];
 		socket.broadcast.emit('player_disconnect', socket.id);
+	});
+
+	// rotate the gun of a player
+	socket.on('player_gun_rotated', function (gun_data) {
+		players[socket.id].rot = gun_data.rot;
+		socket.broadcast.emit('rotate_player_gun', players[socket.id]);
 	});
 });
