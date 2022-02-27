@@ -1,4 +1,4 @@
-class PlayerGunContainer extends Phaser.GameObjects.Container {
+class PlayerGunContainer extends GunContainer {
 
 	constructor(scene, player) {
 		super(scene, player);

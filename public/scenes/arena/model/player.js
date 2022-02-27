@@ -31,7 +31,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.setSize(20, 40);
 		this.setOffset(20, 25);
 
-		this.gun = new GunContainer(scene, this);
+		this.gun = new PlayerGunContainer(scene, this);
 
 		scene.add.existing(this.gun);
 	}
