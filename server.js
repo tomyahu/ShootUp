@@ -60,4 +60,10 @@ io.on('connection', function (socket) { //returns socket which is a piece of dat
 		players[socket.id].rot = gun_data.rot;
 		socket.broadcast.emit('rotate_player_gun', players[socket.id]);
 	});
+
+
+	// rotate the gun of a player
+	socket.on('bullet_shot', function (bullet_data) {
+		socket.broadcast.emit('add_bullet', bullet_data);
+	});
 });

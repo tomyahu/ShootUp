@@ -18,6 +18,7 @@ class ArenaScene extends Phaser.Scene {
 		this.load.image('enemy', './public/img/player.png');
 		this.load.image('box', './public/img/box.png');
 		this.load.image('gun', './public/img/gun.png');
+		this.load.image('bullet', './public/img/bullet.png');
 		this.load.image('debug_area_sprite_sheet', './public/img/DebugMapSpriteSheet.png');
 		this.load.tilemapTiledJSON('warehouse', './public/tiles/warehouse.json' );
 	}
@@ -44,6 +45,8 @@ class ArenaScene extends Phaser.Scene {
 
 			});
 		});
+
+		this.bullet_manager = new BulletManager(this);
 
 		self = this;
 		this.io.on('new_player', function (pInfo) { //we?re sending info about the new player from the server. So, we accept the info by pInfo
@@ -73,10 +76,23 @@ class ArenaScene extends Phaser.Scene {
 				}
 			});
 		});
+
+		// rotate other player gun
+		this.io.on('add_bullet', function(bullet_data) {
+			self.bullet_manager.addBullet(
+				bullet_data.x,
+				bullet_data.y,
+				bullet_data.vx,
+				bullet_data.vy
+			)
+		});
+
 	}
 
 
 	update(time, delta) {
+		this.bullet_manager.update(delta);
+
 		if (this.player_init == true) {
 			this.player.update();
 		}
@@ -99,13 +115,13 @@ class ArenaScene extends Phaser.Scene {
 		this.platforms_layer.setScale(2);
 		this.platforms_layer.setCollisionByProperty({ collision: true });
 
-		/*const debugGraphics = this.add.graphics().setAlpha(0.75);
+		/*
+		const debugGraphics = this.add.graphics().setAlpha(0.75);
 		this.platforms_layer.renderDebug(debugGraphics, {
 			tileColor: null, // Color of non-colliding tiles
 			collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
 			faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-		});
-		*/
+		});*/
 
 		this.platforms_layer.layer.data.forEach((tiles) => {
 			tiles.forEach((tile) => {
@@ -147,5 +163,11 @@ class ArenaScene extends Phaser.Scene {
 			player_list.push(enemies[i])
 
 		return player_list;
+	}
+
+
+	// getters
+	getBulletManager() {
+		return this.bullet_manager;
 	}
 }

@@ -71,6 +71,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 	}
 
 
+	destroy() {
+		super.destroy();
+		this.gun.destroy()
+	}
+
+
 	// getters
 	getGunPosition() {
 		return {

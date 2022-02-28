@@ -2,6 +2,12 @@ class PlayerGunContainer extends GunContainer {
 
 	constructor(scene, player) {
 		super(scene, player);
+
+		let bullet_speed = 3000;
+		let self = this;
+		scene.input.on('pointerdown', function (pointer) {
+			self.shootBullet(self.x, self.y, bullet_speed * Math.cos(self.rot), bullet_speed * Math.sin(self.rot));
+		}, scene);
 	}
 
 

@@ -58,10 +58,12 @@
             {
              "0":
                 {
+                 "bulletproof":true,
                  "collision":true
                 },
              "1":
                 {
+                 "bulletproof":false,
                  "collision":true,
                  "one_way_platform":true
                 }
@@ -70,10 +72,12 @@
             {
              "0":
                 {
+                 "bulletproof":"bool",
                  "collision":"bool"
                 },
              "1":
                 {
+                 "bulletproof":"bool",
                  "collision":"bool",
                  "one_way_platform":"bool"
                 }
