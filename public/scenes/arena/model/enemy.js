@@ -27,8 +27,19 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 			y: 0
 		}
 
+		// gun
 		this.gun = new GunContainer(scene, this);
 		scene.add.existing(this.gun);
+
+		// hp
+		this.hp = 40;
+
+		// UI
+		this.hp_text = new Phaser.GameObjects.Text(scene, this.x, this.y, this.hp, { align: 'center', fontSize: '1.5em', fontFamily: 'Arial', })
+		scene.add.existing(this.hp_text);
+
+		this.setSize(20, 40);
+		this.setOffset(20, 25);
 	}
 
 
@@ -56,6 +67,15 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 	}
 
 
+	updateDataVisualization() {
+		const top_left = this.hp_text.getTopLeft();
+		const top_right = this.hp_text.getTopRight();
+
+		this.hp_text.setPosition( this.x - (top_right.x - top_left.x) / 2, this.y-32 );
+		this.hp_text.setText(this.hp);
+	}
+
+
 	// setWantedPosition: num, num -> None
 	// sets the position where the camera needs to be so it can get there
 	setWantedPosition( new_x, new_y ) {
@@ -64,16 +84,28 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 			y: new_y
 		}
 
+		const dx = (this.wanted_pos.x - this.x);
+		const dy = (this.wanted_pos.y - this.y);
+		const k = 2.5; // corrention constant depending on distance
+		const c_t = Math.min( Math.sqrt( dx*dx + dy*dy ) * k + 0.001, this.correction_time );
+
 		this.wanted_speed = {
-			x: (this.wanted_pos.x - this.x) / this.correction_time,
-			y: (this.wanted_pos.y - this.y) / this.correction_time
+			x: dx / c_t,
+			y: dy / c_t
 		}
 	}
 
 
 	destroy() {
 		super.destroy();
-		this.gun.destroy()
+		this.gun.destroy();
+		this.hp_text.destroy();
+	}
+
+
+	// setters
+	setHP(new_hp) {
+		this.hp = new_hp;
 	}
 
 

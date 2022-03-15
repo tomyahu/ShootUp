@@ -11,19 +11,22 @@ class CameraObject extends Phaser.GameObjects.Sprite {
 		scene.physics.add.existing(this);
 
 		this.scene = scene;
-		this.max_zoom = 1.5;
+		this.max_zoom = 3;
+
+		this.correction_pos_time = 200;
+		this.correction_zoom_time = 200;
 	}
 
 
-	update() {
-		this.updateCenter();
-		this.updateZoom();
+	update(delta) {
+		this.updateCenter(delta);
+		this.updateZoom(delta);
 	}
 
 
-	// updateCenter: None -> None
+	// updateCenter: num -> None
 	// updates the center of the camera
-	updateCenter() {
+	updateCenter(delta) {
 		let avg_x = 0;
 		let avg_y = 0;
 
@@ -33,18 +36,24 @@ class CameraObject extends Phaser.GameObjects.Sprite {
 			avg_y += players[i].y;
 		}
 
-		avg_x /= players.length;
-		avg_y /= players.length;
+		if( players.length > 0 ) {
+			avg_x /= players.length;
+			avg_y /= players.length;
+		}
 
 		const cam = this.scene.cameras.main;
-		cam.centerOn(avg_x, avg_y);
-		this.setPos(avg_x, avg_y);
+		const max_correction = Math.min(delta, this.correction_pos_time);
+		const new_x = ( avg_x * max_correction + cam.midPoint.x * this.correction_pos_time ) / ( this.correction_pos_time + max_correction );
+		const new_y = ( avg_y * max_correction + cam.midPoint.y * this.correction_pos_time ) / ( this.correction_pos_time + max_correction );
+
+		cam.centerOn(new_x, new_y);
+		this.setPos(new_x, new_y);
 	}
 
 
-	// updateZoom: None -> None
+	// updateZoom: num -> None
 	// updates the zoom of the camera
-	updateZoom() {
+	updateZoom(delta) {
 		let players = this.scene.getPlayers();
 
 		let desv_max = 0;
@@ -56,7 +65,11 @@ class CameraObject extends Phaser.GameObjects.Sprite {
 
 		const cam = this.scene.cameras.main;
 		const zoom = Math.min(this.max_zoom, 1.0 / (desv_max*1.5 + 200) * window_width/2);
-		cam.setZoom(zoom*1.5);
+
+		const max_correction = Math.min(delta, this.correction_zoom_time);
+		const new_zoom = ( zoom * max_correction + cam.zoom * this.correction_zoom_time ) / ( this.correction_zoom_time + max_correction );
+
+		cam.setZoom(new_zoom);
 	}
 
 

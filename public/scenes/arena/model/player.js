@@ -14,11 +14,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.jump_speed = 600;
 		this.depth = 5;
 		this.setGravityY(1200);
-		
+		this.setMaxVelocity(10000, 1000);
+
+		// Parameters
+		this.hp = 40;
+
 		// holds scene
 		this.scene = scene;
 		this.setInteractive();
-		self = this;
 		
 		// input handlers
 		this.keyLeft = scene.input.keyboard.addKey('A');
@@ -31,14 +34,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.setSize(20, 40);
 		this.setOffset(20, 25);
 
+		// gun
 		this.gun = new PlayerGunContainer(scene, this);
-
 		scene.add.existing(this.gun);
+
+		// UI
+		this.hp_text = new Phaser.GameObjects.Text(scene, this.x, this.y, this.hp, { align: 'center', fontSize: '1.5em', fontFamily: 'Arial', })
+		scene.add.existing(this.hp_text);
+
+		let self = this;
+		scene.events.on('postupdate', function(time, delta) {
+			self.updatePlayerDataVisualization()
+		});
 	}
 
 	update() {
 		this.updatePlayerMovement();
-		this.broadcastPlayerMovement();
+		if( this.isAlive() ) {
+			this.broadcastPlayerMovement();
+		}
 	}
 
 
@@ -61,6 +75,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.old_x = this.x;
 		this.old_y = this.y;
 	}
+	
+
+	updatePlayerDataVisualization() {
+		const top_left = this.hp_text.getTopLeft();
+		const top_right = this.hp_text.getTopRight();
+
+		this.hp_text.setPosition( this.x - (top_right.x - top_left.x) / 2, this.y-32 );
+		this.hp_text.setText(this.hp);
+	}
 
 
 	// broadcastPlayerMovement: None -> None
@@ -72,12 +95,42 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	}
 
 
+	getDamaged(dmg) {
+		this.hp = Math.max( this.hp - dmg, 0 );
+		if( this.isAlive() ) {
+			this.scene.io.emit('player_took_damage', {new_hp: this.hp});
+		} else {
+			console.log("mori");
+			this.setAlpha(0.5);
+			this.gun.getGun().setAlpha(0.5);
+			this.scene.io.emit('player_died', {});
+		}
+
+	}
+
+
 	// getters
 	getGunPosition() {
 		return {
 			x: this.x,
 			y: this.y
 		};
+	}
+
+
+	getHP() {
+		return this.hp;
+	}
+
+
+	isAlive() {
+		return this.hp > 0;
+	}
+
+
+	// setters
+	setHP( new_hp ) {
+		this.hp = new_hp;
 	}
 
 }

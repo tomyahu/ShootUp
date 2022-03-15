@@ -68,6 +68,23 @@ class ArenaScene extends Phaser.Scene {
 			});
 		});
 
+		this.io.on('enemy_took_damage', function(player_data) {
+			enemies_ref.getChildren().forEach(function(enemy) {
+				if (player_data.player_id == enemy.id) { //set a new position for the enemy because the player data and enemy id in the enemy's group match together
+					enemy.setHP(player_data.hp);
+				}
+			});
+		});
+
+		this.io.on('enemy_died', function(player_data) {
+			enemies_ref.getChildren().forEach(function(enemy) {
+				if (player_data.player_id == enemy.id) { //set a new position for the enemy because the player data and enemy id in the enemy's group match together
+					enemies_ref.remove(enemy);
+					enemy.destroy();
+				}
+			});
+		});
+
 		// rotate other player gun
 		this.io.on('rotate_player_gun', function(player_data) {
 			enemies_ref.getChildren().forEach(function(enemy) {
@@ -77,9 +94,17 @@ class ArenaScene extends Phaser.Scene {
 			});
 		});
 
+		this.io.on('respawn', function(data) {
+			self.player.setHP( data.hp );
+			self.player.setPosition( data.x, data.y );
+			self.player.setAlpha( 1 );
+			self.player.gun.gun.setAlpha( 1 );
+		});
+
 		// rotate other player gun
 		this.io.on('add_bullet', function(bullet_data) {
 			self.bullet_manager.addBullet(
+				bullet_data.id,
 				bullet_data.x,
 				bullet_data.y,
 				bullet_data.vx,
@@ -87,6 +112,18 @@ class ArenaScene extends Phaser.Scene {
 			)
 		});
 
+
+		this.io.on('delete_bullet', function(bullet_data) {
+			self.bullet_manager.deleteBullet(
+				bullet_data.id
+			)
+		});
+
+		this.events.on('postupdate', function(time, delta) {
+			enemies_ref.getChildren().forEach(function(enemy) {
+				enemy.updateDataVisualization()
+			});
+		});
 	}
 
 
@@ -97,7 +134,7 @@ class ArenaScene extends Phaser.Scene {
 			this.player.update();
 		}
 
-		this.camera_object.update();
+		this.camera_object.update(delta);
 
 		this.enemies.getChildren().forEach(function(enemy) {
 			enemy.update(delta);

@@ -39,7 +39,6 @@ class GunContainer extends Phaser.GameObjects.Container {
 		x = x + this.gun.getOffsetR() * Math.cos(this.rot + this.gun.getOffsetW())
 		y = y + this.gun.getOffsetR() * Math.sin(this.rot + this.gun.getOffsetW())
 
-		this.scene.getBulletManager().addBullet(x, y, vx, vy)
 		this.scene.io.emit('bullet_shot', {x: x, y: y, vx: vx, vy: vy}); //the object contains the movement data
 	}
 
@@ -47,6 +46,12 @@ class GunContainer extends Phaser.GameObjects.Container {
 	destroy() {
 		super.destroy();
 		this.gun.destroy()
+	}
+
+
+	// getters
+	getGun() {
+		return this.gun;
 	}
 
 }

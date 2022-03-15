@@ -4,30 +4,34 @@ class BulletManager {
 		this.scene = scene;
 
 		this.bullet_time_to_live = 3000;
-		this.bullets = new Set();
+		this.bullets = {};
+		
 	}
 
 
 	update(delta) {
-		for (let bullet of this.bullets) {
+		for (let id of Object.keys(this.bullets)) {
+			let bullet = this.bullets[id];
 			bullet.update(delta);
 			
 			if( bullet.getTimeAlive() > this.bullet_time_to_live ) {
-				this.bullets.delete(bullet);
 				bullet.destroy();
+				delete this.bullets[id];
 			}
 		}
 	}
 
 
-	addBullet( x, y, vx, vy ) {
-		let new_bullet = new Bullet( this.scene, x, y, vx, vy )
-		this.bullets.add( new_bullet );
+	addBullet( id, x, y, vx, vy ) {
+		let new_bullet = new Bullet( this.scene, id, x, y, vx, vy )
+		this.bullets[id] = new_bullet;
 	}
 
 
-	deleteBullet(bullet) {
-		this.bullets.delete(bullet);
-		bullet.destroy();
+	deleteBullet(id) {
+		let bullet = this.bullets[id];
+		if( bullet ) bullet.destroy();
+		
+		delete this.bullets[id];
 	}
 }
