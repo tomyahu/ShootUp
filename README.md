@@ -36,4 +36,4 @@ to full on features:
 
 I was planning on setting up donations and a small milestone (like 25 USD or smth) to see if there's interest in the game. I'll set up an itch.io page soon for it with a link where you can donate.
 
-ALSO I stream game development on Sundays at 6pm GMT-3 at (https://www.twitch.tv/atemo6)[https://www.twitch.tv/atemo6] come and say hi if you want!
+ALSO I stream game development on Sundays at 6pm GMT-3 at [https://www.twitch.tv/atemo6](https://www.twitch.tv/atemo6) come and say hi if you want!
